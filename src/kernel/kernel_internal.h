@@ -7,7 +7,7 @@
 #define __LIBDRAGON_KERNEL_INTERNAL_H
 
 #include "kernel.h"
-#ifdef __NEWLIB__
+#if defined(__NEWLIB__) && !defined(__PICOLIBC__)
 #include <sys/reent.h>
 #endif
 
@@ -57,7 +57,7 @@ typedef struct __attribute__((aligned (8))) kthread_s
 		int interrupt_depth;
 		/** Mirror of __interrupt_sr  */
 		int interrupt_sr;
-		#ifdef __NEWLIB__
+		#if defined(__NEWLIB__) && !defined(__PICOLIBC__)
 		/** Newlib reentrancy */
 		struct _reent *reent_ptr;
 		#endif

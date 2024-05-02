@@ -326,7 +326,7 @@ reg_block_t* __kthread_syscall_schedule(reg_block_t *stack_state)
     
 	th_cur_tp = th_cur->tp_value;
     
-	#ifdef __NEWLIB__
+	#if defined(__NEWLIB__) && !defined(__PICOLIBC__)
 	_REENT = th_cur->tls.reent_ptr;
 	#endif
 
@@ -356,7 +356,7 @@ kthread_t* kernel_init(void)
 {
 	assertf(__tdata_align <= 8, "Unsupported TLS alignment of %d (Maximum 8)", __tdata_align);
 	assert(!__kernel);
-	#ifdef __NEWLIB__
+	#if defined(__NEWLIB__) && !defined(__PICOLIBC__)
 	// Check if __malloc_lock is a nop. This happens with old toolchains where
 	// newlib was compiled with --disable-threads.
 	extern void __malloc_lock(void);
@@ -383,7 +383,7 @@ kthread_t* kernel_init(void)
 	th_main.flags = TH_FLAG_DETACHED; // main thread cannot be joined
 	th_main.tp_value = __tls_base+TP_OFFSET;
     
-	#ifdef __NEWLIB__
+	#if defined(__NEWLIB__) && !defined(__PICOLIBC__)
 	th_main.tls.reent_ptr = _REENT;
 	#endif
 
@@ -450,7 +450,7 @@ kthread_t* __kthread_new_internal(const char *name, int stack_size, int8_t pri, 
 	// make debugging more difficult and might even cause the kernel to crash.
 
 	int extra_size = TLS_SIZE;
-	#ifdef __NEWLIB__
+	#if defined(__NEWLIB__) && !defined(__PICOLIBC__)
 	extra_size += sizeof(struct _reent);
 	#endif
 	void *thmem = malloc(STACK_GUARD + stack_size + sizeof(kthread_t) + extra_size);
@@ -516,7 +516,7 @@ kthread_t* __kthread_new_internal(const char *name, int stack_size, int8_t pri, 
 	th->tp_value = extra+TP_OFFSET;
 	extra += TLS_SIZE;
 	// TLS initial configuration
-	#ifdef __NEWLIB__
+	#if defined(__NEWLIB__) && !defined(__PICOLIBC__)
 	th->tls.reent_ptr = extra;
 	_REENT_INIT_PTR(th->tls.reent_ptr);
 	#endif
